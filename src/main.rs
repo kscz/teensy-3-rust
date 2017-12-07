@@ -14,16 +14,6 @@ pub extern "C" fn rust_begin_unwind(_fmt: &core::fmt::Arguments,
     loop {}
 }
 
-#[no_mangle]
-pub extern "C" fn __aeabi_unwind_cpp_pr0() -> () {
-    loop {}
-}
-
-#[no_mangle]
-pub extern "C" fn __aeabi_unwind_cpp_pr1() -> () {
-    loop {}
-}
-
 macro_rules! GPIOC_PDOR   {() => (0x400FF080 as *mut u32);} // GPIOC_PDOR - page 1334,1335
 macro_rules! WDOG_UNLOCK  {() => (0x4005200E as *mut u16);} // Watchdog Unlock register
 macro_rules! WDOG_STCTRLH {() => (0x40052000 as *mut u16);} // Watchdog Status and Control Register High
@@ -44,22 +34,24 @@ extern "C" {
 #[link_section=".vectors"]
 #[allow(non_upper_case_globals)]
 #[no_mangle]
-pub static ISRVectors: [Option<unsafe extern "C" fn()>; 16] = [Some(_estack), // Stack pointer
-                                                               Some(startup), // Reset
-                                                               Some(isr_nmi), // NMI
-                                                               Some(isr_hardfault), // Hard Fault
-                                                               Some(isr_mmfault), /* CM3 Memory Management Fault */
-                                                               Some(isr_busfault), /* CM3 Bus Fault */
-                                                               Some(isr_usagefault), /* CM3 Usage Fault */
-                                                               Some(isr_reserved_1), /* Reserved - Used as NXP Checksum */
-                                                               None, // Reserved
-                                                               None, // Reserved
-                                                               None, // Reserved
-                                                               Some(isr_svcall), // SVCall
-                                                               Some(isr_debugmon), /* Reserved for debug */
-                                                               None, // Reserved
-                                                               Some(isr_pendsv), // PendSV
-                                                               Some(isr_systick) /* SysTick */];
+pub static ISRVectors: [Option<unsafe extern "C" fn()>; 16] = [
+    Some(_estack),          // Stack pointer
+    Some(startup),          // Reset
+    Some(isr_nmi),          // NMI
+    Some(isr_hardfault),    // Hard Fault
+    Some(isr_mmfault),      // CM3 Memory Management Fault
+    Some(isr_busfault),     // CM3 Bus Fault
+    Some(isr_usagefault),   // CM3 Usage Fault
+    Some(isr_reserved_1),   // Reserved - Used as NXP Checksum
+    None,                   // Reserved
+    None,                   // Reserved
+    None,                   // Reserved
+    Some(isr_svcall),       // SVCall
+    Some(isr_debugmon),     // Reserved for debug
+    None,                   // Reserved
+    Some(isr_pendsv),       // PendSV
+    Some(isr_systick)       // SysTick
+];
 
 #[link_section=".flashconfig"]
 #[allow(non_upper_case_globals)]
